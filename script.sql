@@ -41,22 +41,28 @@ CREATE TABLE padraoquarto (
     nomepadrao varchar(20),
     PRIMARY KEY (IDpadrao)
 );
+CREATE TABLE quartos (
+	IDquarto int NOT NULL AUTO_INCREMENT,
+    estado enum('Livre','Ocupado'),
+    IDtipo int(1),
+    IDpadrao int(1),
+    PRIMARY KEY (IDquarto),
+    FOREIGN KEY (IDtipo) REFERENCES tipoquarto(IDtipo),
+    FOREIGN KEY (IDpadrao) REFERENCES padraoquarto(IDpadrao)
+);
 CREATE TABLE reservas (
 	IDreserva int NOT NULL AUTO_INCREMENT,
     diaentrada date,
     diasaida date,
-    tipo int,
-    padrao int,
     numerohospedes int,
     IDhospede int,
     IDatendente int,
+    IDquarto,
     PRIMARY KEY (IDreserva),
     FOREIGN KEY (IDhospede) REFERENCES hospedes(IDhospede),
     FOREIGN KEY (IDatendente) REFERENCES atendentes(IDatendente),
-    FOREIGN KEY (tipo) REFERENCES tipoquarto(IDtipo),
-    FOREIGN KEY (padrao) REFERENCES padraoquarto(IDpadrao)
+    FOREIGN KEY (IDquarto) REFERENCES quartos(IDquarto)
 );
-
 -- Início SQL-DML
 -- Inserir atendentes
 INSERT INTO atendentes (nome,idade) VALUES ("Ana Paula",25);
@@ -115,3 +121,44 @@ INSERT INTO tipoquarto (nometipo) VALUES ("Quádruplo");
 INSERT INTO padraoquarto (nomepadrao) VALUES ("Standard");
 INSERT INTO padraoquarto (nomepadrao) VALUES ("Suíte");
 INSERT INTO padraoquarto (nomepadrao) VALUES ("Luxo");
+-- Inserir reservas
+INSERT INTO reservas (diaentrada,diasaida,tipo,padrao,numerohospedes,IDhospede,IDatendente)
+VALUES (
+	'2018-11-01',
+    '2018-11-05',
+    (SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Simples'),
+    (SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Standard'),
+    1,
+    (SELECT IDhospede FROM hospedes WHERE nome = 'Pedro Gaya'),
+    (SELECT IDatendente FROM atendentes WHERE nome = 'Ana Paula')
+);
+INSERT INTO reservas (diaentrada,diasaida,tipo,padrao,numerohospedes,IDhospede,IDatendente)
+VALUES (
+	'2018-11-15',
+    '2018-11-20',
+    (SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Triplo'),
+    (SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Standard'),
+    3,
+    (SELECT IDhospede FROM hospedes WHERE nome = 'Maria Souza'),
+    (SELECT IDatendente FROM atendentes WHERE nome = 'Beatriz')
+);
+INSERT INTO reservas (diaentrada,diasaida,tipo,padrao,numerohospedes,IDhospede,IDatendente)
+VALUES (
+	'2018-11-17',
+    '2018-11-20',
+    (SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Triplo'),
+    (SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Suíte'),
+    3,
+    (SELECT IDhospede FROM hospedes WHERE nome = 'Marcos Castro'),
+    (SELECT IDatendente FROM atendentes WHERE nome = 'Beatriz')
+);
+INSERT INTO reservas (diaentrada,diasaida,tipo,padrao,numerohospedes,IDhospede,IDatendente)
+VALUES (
+	'2018-11-01',
+    '2018-11-05',
+    (SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Simples'),
+    (SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Standard'),
+    1,
+    (SELECT IDhospede FROM hospedes WHERE nome = 'Pedro Gaya'),
+    (SELECT IDatendente FROM atendentes WHERE nome = 'Ana Paula')
+);
