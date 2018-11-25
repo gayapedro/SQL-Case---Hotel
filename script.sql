@@ -1,3 +1,7 @@
+-- APS Banco de Dados I
+-- Prof: Felipe Torres
+-- Autor: Pedro Augusto Gaya Antunes
+-- Matrícula: 030112096
 -- Início SQL-DDL
 -- Criar banco e selecionar ele
 CREATE DATABASE IF NOT EXISTS hotel;
@@ -43,7 +47,6 @@ CREATE TABLE padraoquarto (
 );
 CREATE TABLE quartos (
 	IDquarto int NOT NULL AUTO_INCREMENT,
-    estado enum('Livre','Ocupado'),
     IDtipo int(1),
     IDpadrao int(1),
     PRIMARY KEY (IDquarto),
@@ -57,7 +60,7 @@ CREATE TABLE reservas (
     numerohospedes int,
     IDhospede int,
     IDatendente int,
-    IDquarto,
+    IDquarto int,
     PRIMARY KEY (IDreserva),
     FOREIGN KEY (IDhospede) REFERENCES hospedes(IDhospede),
     FOREIGN KEY (IDatendente) REFERENCES atendentes(IDatendente),
@@ -121,4 +124,84 @@ INSERT INTO tipoquarto (nometipo) VALUES ("Quádruplo");
 INSERT INTO padraoquarto (nomepadrao) VALUES ("Standard");
 INSERT INTO padraoquarto (nomepadrao) VALUES ("Suíte");
 INSERT INTO padraoquarto (nomepadrao) VALUES ("Luxo");
+-- Inserir quartos
+INSERT INTO quartos (IDtipo,IDpadrao) VALUES ((SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Simples'),(SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Standard'));
+INSERT INTO quartos (IDtipo,IDpadrao) VALUES ((SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Simples'),(SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Suíte'));
+INSERT INTO quartos (IDtipo,IDpadrao) VALUES ((SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Simples'),(SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Luxo'));
+INSERT INTO quartos (IDtipo,IDpadrao) VALUES ((SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Duplo'),(SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Standard'));
+INSERT INTO quartos (IDtipo,IDpadrao) VALUES ((SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Duplo'),(SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Suíte'));
+INSERT INTO quartos (IDtipo,IDpadrao) VALUES ((SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Duplo'),(SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Luxo'));
+INSERT INTO quartos (IDtipo,IDpadrao) VALUES ((SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Triplo'),(SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Standard'));
+INSERT INTO quartos (IDtipo,IDpadrao) VALUES ((SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Triplo'),(SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Suíte'));
+INSERT INTO quartos (IDtipo,IDpadrao) VALUES ((SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Triplo'),(SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Luxo'));
+INSERT INTO quartos (IDtipo,IDpadrao) VALUES ((SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Quádruplo'),(SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Standard'));
+INSERT INTO quartos (IDtipo,IDpadrao) VALUES ((SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Quádruplo'),(SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Suíte'));
+INSERT INTO quartos (IDtipo,IDpadrao) VALUES ((SELECT IDtipo FROM tipoquarto WHERE nometipo = 'Quádruplo'),(SELECT IDpadrao FROM padraoquarto WHERE nomepadrao = 'Luxo'));
 -- Inserir reservas
+INSERT INTO reservas (diaentrada,diasaida,numerohospedes,IDhospede,IDatendente,IDquarto) VALUES (
+	'2018-11-01',
+    '2018-11-10',
+    1,
+    (SELECT IDhospede FROM hospedes WHERE nome = 'Pedro Gaya'),
+    (SELECT IDatendente FROM atendentes WHERE nome = 'Ana Paula'),
+    1
+);
+INSERT INTO reservas (diaentrada,diasaida,numerohospedes,IDhospede,IDatendente,IDquarto) VALUES (
+	'2018-11-10',
+    '2018-11-17',
+    1,
+    (SELECT IDhospede FROM hospedes WHERE nome = 'Maria Souza'),
+    (SELECT IDatendente FROM atendentes WHERE nome = 'Ana Paula'),
+    2
+);
+INSERT INTO reservas (diaentrada,diasaida,numerohospedes,IDhospede,IDatendente,IDquarto) VALUES (
+	'2018-11-15',
+    '2018-11-20',
+    1,
+    (SELECT IDhospede FROM hospedes WHERE nome = 'Marcos Castro'),
+    (SELECT IDatendente FROM atendentes WHERE nome = 'Ana Paula'),
+    3
+);
+INSERT INTO reservas (diaentrada,diasaida,numerohospedes,IDhospede,IDatendente,IDquarto) VALUES (
+	'2018-11-20',
+    '2018-11-30',
+    2,
+    (SELECT IDhospede FROM hospedes WHERE nome = 'Júlia Assis'),
+    (SELECT IDatendente FROM atendentes WHERE nome = 'Ana Paula'),
+    5
+);SELECT q.IDquarto,r.diasaida as 'Liberado',t.nometipo as 'Tipo', p.nomepadrao as 'Padrão'
+FROM quartos as q
+LEFT JOIN reservas as r ON q.IDquarto = r.IDquarto
+JOIN tipoquarto as t ON t.IDtipo = q.IDtipo
+JOIN padraoquarto as p ON p.IDpadrao = q.IDpadrao
+WHERE r.diasaida < current_date()
+OR r.diasaida is null
+AND r.diaentrada != current_date()
+OR r.diaentrada is null;
+INSERT INTO reservas (diaentrada,diasaida,numerohospedes,IDhospede,IDatendente,IDquarto) VALUES (
+	'2018-11-23',
+    '2018-11-30',
+    3,
+    (SELECT IDhospede FROM hospedes WHERE nome = 'Pedro Gaya'),
+    (SELECT IDatendente FROM atendentes WHERE nome = 'Paulo'),
+    8
+);
+INSERT INTO reservas (diaentrada,diasaida,numerohospedes,IDhospede,IDatendente,IDquarto) VALUES (
+	'2018-11-25',
+    '2018-11-30',
+    3,
+    (SELECT IDhospede FROM hospedes WHERE nome = 'Luiz Santos'),
+    (SELECT IDatendente FROM atendentes WHERE nome = 'Beatriz'),
+    9
+);
+-- Início SQL-DQL
+-- Quartos disponíveis no dia de hoje
+SELECT q.IDquarto,r.diasaida as 'Liberado',t.nometipo as 'Tipo', p.nomepadrao as 'Padrão'
+FROM quartos as q
+LEFT JOIN reservas as r ON q.IDquarto = r.IDquarto
+JOIN tipoquarto as t ON t.IDtipo = q.IDtipo
+JOIN padraoquarto as p ON p.IDpadrao = q.IDpadrao
+WHERE r.diasaida < current_date()
+OR r.diasaida is null
+AND r.diaentrada != current_date()
+OR r.diaentrada is null;
