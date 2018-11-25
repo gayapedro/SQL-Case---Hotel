@@ -169,15 +169,7 @@ INSERT INTO reservas (diaentrada,diasaida,numerohospedes,IDhospede,IDatendente,I
     (SELECT IDhospede FROM hospedes WHERE nome = 'Júlia Assis'),
     (SELECT IDatendente FROM atendentes WHERE nome = 'Ana Paula'),
     5
-);SELECT q.IDquarto,r.diasaida as 'Liberado',t.nometipo as 'Tipo', p.nomepadrao as 'Padrão'
-FROM quartos as q
-LEFT JOIN reservas as r ON q.IDquarto = r.IDquarto
-JOIN tipoquarto as t ON t.IDtipo = q.IDtipo
-JOIN padraoquarto as p ON p.IDpadrao = q.IDpadrao
-WHERE r.diasaida < current_date()
-OR r.diasaida is null
-AND r.diaentrada != current_date()
-OR r.diaentrada is null;
+);
 INSERT INTO reservas (diaentrada,diasaida,numerohospedes,IDhospede,IDatendente,IDquarto) VALUES (
 	'2018-11-23',
     '2018-11-30',
