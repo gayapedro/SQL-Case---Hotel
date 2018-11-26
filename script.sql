@@ -188,7 +188,7 @@ INSERT INTO reservas (diaentrada,diasaida,numerohospedes,IDhospede,IDatendente,I
 );
 -- Início SQL-DQL
 -- Quartos disponíveis no dia de hoje
-SELECT q.IDquarto,r.diasaida as 'Liberado',t.nometipo as 'Tipo', p.nomepadrao as 'Padrão'
+SELECT q.IDquarto as 'Quarto nº',IFNULL(DATE_FORMAT(r.diasaida,"%W, %e/%m/%Y"),"-") as 'Saída',t.nometipo as 'Tipo', p.nomepadrao as 'Padrão'
 FROM quartos as q
 LEFT JOIN reservas as r ON q.IDquarto = r.IDquarto
 JOIN tipoquarto as t ON t.IDtipo = q.IDtipo
@@ -197,3 +197,4 @@ WHERE r.diasaida < current_date()
 OR r.diasaida is null
 AND r.diaentrada != current_date()
 OR r.diaentrada is null;
+-- Quartos ocupados no dia de hoje
