@@ -186,15 +186,60 @@ INSERT INTO reservas (diaentrada,diasaida,numerohospedes,IDhospede,IDatendente,I
     (SELECT IDatendente FROM atendentes WHERE nome = 'Beatriz'),
     9
 );
+INSERT INTO reservas (diaentrada,diasaida,numerohospedes,IDhospede,IDatendente,IDquarto) VALUES (
+	'2018-11-25',
+    '2018-11-26',
+    3,
+    (SELECT IDhospede FROM hospedes WHERE nome = 'Rebeca Fernandes'),
+    (SELECT IDatendente FROM atendentes WHERE nome = 'Marcos'),
+    7
+);
 -- Início SQL-DQL
 -- Quartos disponíveis no dia de hoje
-SELECT q.IDquarto as 'Quarto nº',IFNULL(DATE_FORMAT(r.diasaida,"%W, %e/%m/%Y"),"-") as 'Saída',t.nometipo as 'Tipo', p.nomepadrao as 'Padrão'
-FROM quartos as q
-LEFT JOIN reservas as r ON q.IDquarto = r.IDquarto
-JOIN tipoquarto as t ON t.IDtipo = q.IDtipo
-JOIN padraoquarto as p ON p.IDpadrao = q.IDpadrao
+SELECT q.IDquarto AS 'Quarto nº',IFNULL(DATE_FORMAT(r.diasaida,"%W, %e/%m/%Y"),"-") AS 'Saída',t.nometipo AS 'Tipo', p.nomepadrao AS 'Padrão'
+FROM quartos AS q
+LEFT JOIN reservas AS r ON q.IDquarto = r.IDquarto
+JOIN tipoquarto AS t ON t.IDtipo = q.IDtipo
+JOIN padraoquarto AS p ON p.IDpadrao = q.IDpadrao
 WHERE r.diasaida < current_date()
 OR r.diasaida is null
 AND r.diaentrada != current_date()
 OR r.diaentrada is null;
 -- Quartos ocupados no dia de hoje
+SELECT q.IDquarto AS 'Quarto nº',DATE_FORMAT(r.diaentrada,"%W, %e/%m/%Y") AS 'Entrada',DATE_FORMAT(r.diasaida,"%W, %e/%m/%Y") AS 'Saída',
+t.nometipo AS 'Tipo',p.nomepadrao AS 'Padrão'
+FROM quartos as q
+JOIN reservas AS r ON q.IDquarto = r.IDquarto
+JOIN tipoquarto AS t ON t.IDtipo = q.IDtipo
+JOIN padraoquarto AS p ON p.IDpadrao = q.IDpadrao
+WHERE r.diaentrada <= current_date()
+AND r.diasaida >= current_date();
+-- Liberação de quartos em determinada vaga
+SELECT q.IDquarto AS 'Quarto nº', h.nome AS 'Hóspede', DATE_FORMAT(r.diasaida,"%W, %e/%m/%Y") AS 'Saída'
+FROM quartos AS q
+JOIN reservas as r ON r.IDquarto = q.IDquarto
+JOIN hospedes as h ON h.IDhospede = r.IDhospede
+WHERE r.diasaida = current_date();
+-- Ocupação do hotel em determinada data
+SELECT DATE_FORMAT(current_date(),"%W, %e/%m/%Y") AS 'Data',SUM(r.numerohospedes) AS 'Ocupação'
+FROM reservas AS r
+WHERE r.diaentrada <= current_date()
+AND r.diasaida >= current_date();
+-- Quartos simples desocupados em determinada data
+SELECT q.IDquarto AS 'Quarto nº', t.nometipo AS 'Tipo', p.nomepadrao AS 'Padrão'
+FROM quartos AS q
+JOIN reservas AS r ON r.IDquarto = q.IDquarto
+JOIN tipoquarto AS t ON t.IDtipo = q.IDtipo
+JOIN padraoquarto AS p ON p.IDpadrao = q.IDpadrao
+WHERE t.nometipo = "Simples"
+AND r.diaentrada < current_date()
+AND r.diasaida < current_date()
+OR r.diaentrada > current_date;
+-- Qual o funcionário responsável por uma reserva
+SELECT r.IDreserva AS 'Nº Reserva',DATE_FORMAT(r.diaentrada,"%W, %e/%m/%Y") AS 'Data Entrada',
+DATE_FORMAT(r.diasaida,"%W, %e/%m/%Y") AS 'Data Saída',t.nometipo AS 'Tipo',p.nomepadrao AS 'Padrão', a.nome AS 'Atendente'
+FROM reservas as r
+JOIN quartos as q ON q.IDquarto = r.IDquarto
+JOIN tipoquarto as t ON t.IDtipo = q.IDtipo
+JOIN padraoquarto as p ON p.IDpadrao = q.IDtipo
+JOIN atendentes as a ON a.IDatendente = r.IDatendente;
