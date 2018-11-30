@@ -7,20 +7,20 @@
 CREATE DATABASE IF NOT EXISTS hotel;
 USE hotel;
 -- Criar todas as tabelas
-CREATE TABLE atendentes (
+CREATE TABLE IF NOT EXISTS atendentes (
 	IDatendente int NOT NULL AUTO_INCREMENT,
 	nome varchar(100),
     idade int(2),
     PRIMARY KEY (IDatendente)
 );
-CREATE TABLE telefoneatendentes (
+CREATE TABLE IF NOT EXISTS telefoneatendentes (
 	IDtelefone int NOT NULL AUTO_INCREMENT,
     telefone int(9),
     IDatendente int,
     PRIMARY KEY (IDtelefone),
     FOREIGN KEY (IDatendente) REFERENCES atendentes(IDatendente)
     );
-CREATE TABLE hospedes (
+CREATE TABLE IF NOT EXISTS hospedes (
 	IDhospede int NOT NULL AUTO_INCREMENT,
     nome varchar(100),
     rg int(10),
@@ -28,24 +28,24 @@ CREATE TABLE hospedes (
     nascimento date,
     PRIMARY KEY (IDhospede)
 );
-CREATE TABLE telefonehospedes (
+CREATE TABLE IF NOT EXISTS telefonehospedes (
 	IDtelefone int NOT NULL AUTO_INCREMENT,
     telefone int(9),
     IDhospede int,
     PRIMARY KEY (IDtelefone),
     FOREIGN KEY (IDhospede) REFERENCES hospedes(IDhospede)
 );
-CREATE TABLE tipoquarto (
+CREATE TABLE IF NOT EXISTS tipoquarto (
 	IDtipo int NOT NULL AUTO_INCREMENT,
     nometipo varchar(20),
     PRIMARY KEY (IDtipo)
 );
-CREATE TABLE padraoquarto (
+CREATE TABLE IF NOT EXISTS padraoquarto (
 	IDpadrao int NOT NULL AUTO_INCREMENT,
     nomepadrao varchar(20),
     PRIMARY KEY (IDpadrao)
 );
-CREATE TABLE quartos (
+CREATE TABLE IF NOT EXISTS quartos (
 	IDquarto int NOT NULL AUTO_INCREMENT,
     IDtipo int(1),
     IDpadrao int(1),
@@ -53,7 +53,7 @@ CREATE TABLE quartos (
     FOREIGN KEY (IDtipo) REFERENCES tipoquarto(IDtipo),
     FOREIGN KEY (IDpadrao) REFERENCES padraoquarto(IDpadrao)
 );
-CREATE TABLE reservas (
+CREATE TABLE IF NOT EXISTS reservas (
 	IDreserva int NOT NULL AUTO_INCREMENT,
     diaentrada date,
     diasaida date,
